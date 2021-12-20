@@ -52,7 +52,7 @@ class menu_item():
         self.color = color
         self.font_color = font_color
         if type_font.lower()=="bold":
-            font = pygame.font.Font("freesansbold.ttf", size)
+            font = pygame.font.Font("./assests/fonts/Roboto-Bold.ttf", size)
         elif type_font.lower()=="italic":
             font = pygame.font.Font("./assests/fonts/Roboto-Italic.ttf", size)
         elif type_font.lower()=="italicbold" or type_font.lower()=="bolditallic":

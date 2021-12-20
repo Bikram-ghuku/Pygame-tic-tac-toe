@@ -29,7 +29,8 @@ class win_checker():
         self.len_inp = len(list_inp)
 
     def run_checker(self):
-        for elems_inp in range(self.len_inp):
+        winner = ""
+        for elems_inp in self.list.keys():
             if self.list[elems_inp] == "O":
                 self.o_occur.append(elems_inp)
             if self.list[elems_inp] == "X":
@@ -38,12 +39,13 @@ class win_checker():
         if len(self.o_occur)>=3:
             for elem in WINS:
                 if all(x in self.x_occur for x in elem):
-                    self.winner = "X"
+                    winner = "X"
                     
         if len(self.o_occur)>=3:
             for elem in WINS:
                 if all(x in self.o_occur for x in elem):
-                    self.winner = "O"
+                    winner = "O"
+        return winner
 
 def draw_board(color:tuple, WIDTH_LINE):
     pygame.draw.line(window, color, (0, 200), (600, 200), WIDTH_LINE)
@@ -73,45 +75,66 @@ def game_manager():
         rect = s.get_rect()
         rect.topleft=(elem_colide_box[0], elem_colide_box[1])
         collide_box_data.append(rect)
-    try:
-        for elems in data.keys():
-            if data[elems] == "X" and elems<=8:
-                cross_d = cross(POSS_POS[elems][0], POSS_POS[elems][1], 100, 100, 10 , CROSS_COLOR)
-                cross_d.draw(window)
-            elif data[elems] == "O" and elems<=8:
-                circle_d = circle(POSS_POS[elems][0], POSS_POS[elems][1], 100, 10, CIRCLE_COLOR)
-                circle_d.draw(window)
-    except Exception:
-        pass
     return collide_box_data
 
+def data_filler(data, windowd):
+    for elems in data.keys():
+        if data[elems] == "X":
+            cross_d = cross(POSS_POS[elems][0], POSS_POS[elems][1], 100, 100, 10 , CROSS_COLOR)
+            cross_d.draw(windowd)
+        elif data[elems] == "O":
+            circle_d = circle(POSS_POS[elems][0], POSS_POS[elems][1], 100, 10, CIRCLE_COLOR)
+            circle_d.draw(windowd)
+    pygame.display.update()
+
+def show_winner(winner):
+    pygame.display.set_mode((600, 600))
+    font = pygame.font.SysFont(pygame.font.get_fonts()[0], 32)
+    fon_op = font.render(f"{winner} won!!", True, (0, 0, 0))
+    font_rect = fon_op.get_rect()
+    font_rect.topleft = (250, 250)
+    window.blit(fon_op, font_rect)
 
 def main_loop():
+    global data
+    data={}
+    checker = win_checker(data)
     x_turn = True
-    global mode
-    mode = 0
-    data[9]={}
+    mode = 1
     global pos
     clock = pygame.time.Clock()
     while True:
+        data_filler(data, window)
+        winner = checker.run_checker()
+        if mode==1:
+            fill_window()
+        elif mode==2:
+            show_winner(winner if len(data)<9 else "No one")
+            data={}
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-             
-
-        print(data)
-        fill_window()
-        box_data = game_manager()
-        for rect in range(len(box_data)):
-            rect_op = box_data[rect]
-            if rect_op.collidepoint(pos):
-                if rect not in data:
-                    data[rect] = "X" if x_turn else "O"
-                    x_turn = not x_turn                
-        pygame.display.update()
+                if mode==1:
+                    box_data = game_manager()
+                    for rect in range(len(box_data)):
+                        rect_op = box_data[rect]
+                        if rect_op.collidepoint(pos):
+                            if rect not in data:
+                                data[rect] = "X" if x_turn else "O"
+                                x_turn = not x_turn
+                else:
+                    window.fill((255, 255, 255))
+            #Handle Winners
+            if winner=="O" or winner=="X":
+                print(f"{winner} Won the game")
+                mode=2
+            elif len(data)==9:
+                print("Match tie")
+                winner = "Tie"
+                mode=2
 
 if __name__ == "__main__":
     main_loop()
