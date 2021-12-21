@@ -85,7 +85,7 @@ def game_manager():
     return collide_box_data
 
 
-def data_filler(data, windowd):
+def data_filler(data, windowd, mod_op):
     for elems in data.keys():
         if data[elems] == "X":
             cross_d = cross(POSS_POS[elems][0], POSS_POS[elems][1], 100, 100, 10 , CROSS_COLOR)
@@ -93,11 +93,12 @@ def data_filler(data, windowd):
         elif data[elems] == "O":
             circle_d = circle(POSS_POS[elems][0], POSS_POS[elems][1], 100, 10, CIRCLE_COLOR)
             circle_d.draw(windowd)
-    font = pygame.font.SysFont(pygame.font.get_fonts()[1], 32)
-    fon_op = font.render("X's turn" if x_turn else "O's turn", True, (3,4,94))
-    fon_rect=  fon_op.get_rect()
-    fon_rect.topleft=(200, 610)
-    window.blit(fon_op, fon_rect)
+    if mod_op!=2:
+        font = pygame.font.SysFont(pygame.font.get_fonts()[1], 32)
+        fon_op = font.render("X's turn" if x_turn else "O's turn", True, (3,4,94))
+        fon_rect=  fon_op.get_rect()
+        fon_rect.topleft=(200, 610)
+        window.blit(fon_op, fon_rect)
     pygame.display.update()
 
 def show_winner(winner):
@@ -123,7 +124,7 @@ def main_loop():
     mode = 1
     clock = pygame.time.Clock()
     while True:
-        data_filler(data, window)
+        data_filler(data, window, mode)
         winner = checker.run_checker()
         if mode==1:
             fill_window()
