@@ -30,6 +30,7 @@ class win_checker():
 
     def run_checker(self):
         winner = ""
+        type_win = []
         for elems_inp in self.list.keys():
             if self.list[elems_inp] == "O":
                 self.o_occur.append(elems_inp)
@@ -40,11 +41,17 @@ class win_checker():
             for elem in WINS:
                 if all(x in self.x_occur for x in elem):
                     winner = "X"
+                    type_win = elem
                     
         if len(self.o_occur)>=3:
             for elem in WINS:
                 if all(x in self.o_occur for x in elem):
                     winner = "O"
+                    type_win = elem
+        
+        if len(self.list)>=9:
+            winner="tie"
+            
         return winner
 
 def draw_board(color:tuple, WIDTH_LINE):
@@ -88,12 +95,16 @@ def data_filler(data, windowd):
     pygame.display.update()
 
 def show_winner(winner):
-    pygame.display.set_mode((600, 600))
-    font = pygame.font.SysFont(pygame.font.get_fonts()[0], 32)
-    fon_op = font.render(f"{winner} won!!", True, (0, 0, 0))
+    window.fill((53,130,194))
+    font = pygame.font.SysFont(pygame.font.get_fonts()[1], 64)
+    if winner!="tie":
+        fon_op = font.render(f"{winner} won!!", True, (4,57,105))
+    else:
+        fon_op = font.render("Match Tie!!", True, (4,57,105))
     font_rect = fon_op.get_rect()
-    font_rect.topleft = (250, 250)
+    font_rect.topleft = (150, 250)
     window.blit(fon_op, font_rect)
+    pygame.display.update()
 
 def main_loop():
     global data
@@ -109,7 +120,7 @@ def main_loop():
         if mode==1:
             fill_window()
         elif mode==2:
-            show_winner(winner if len(data)<9 else "No one")
+            show_winner(winner)
             data={}
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -125,15 +136,11 @@ def main_loop():
                             if rect not in data:
                                 data[rect] = "X" if x_turn else "O"
                                 x_turn = not x_turn
-                else:
-                    window.fill((255, 255, 255))
+                    
             #Handle Winners
             if winner=="O" or winner=="X":
-                print(f"{winner} Won the game")
                 mode=2
             elif len(data)==9:
-                print("Match tie")
-                winner = "Tie"
                 mode=2
 
 if __name__ == "__main__":
