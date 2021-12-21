@@ -1,16 +1,16 @@
-import pygame, sys, os
+import pygame, sys
+from random import  randint
 from sprites import *
 pygame.init()
 background = (50,65,194)
 WIDTH = 600
-HEIGHT = 600
+HEIGHT = 650
 CROSS_COLOR = (0,0,84)
 CIRCLE_COLOR = (1,40,144)
 FPS=60
 x_turn = True
 mode=0
 data={}
-pos =(0,0)
 POSS_POS = [(50, 50), (250, 50), (450, 50), (50, 250), (250, 250), (450, 250), (50, 450), (250, 450), (450, 450)]
 WINS = [[0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 4, 8], [2, 4, 6]]
 ICON = './assests/doge.jpg'
@@ -84,6 +84,7 @@ def game_manager():
         collide_box_data.append(rect)
     return collide_box_data
 
+
 def data_filler(data, windowd):
     for elems in data.keys():
         if data[elems] == "X":
@@ -92,6 +93,11 @@ def data_filler(data, windowd):
         elif data[elems] == "O":
             circle_d = circle(POSS_POS[elems][0], POSS_POS[elems][1], 100, 10, CIRCLE_COLOR)
             circle_d.draw(windowd)
+    font = pygame.font.SysFont(pygame.font.get_fonts()[1], 32)
+    fon_op = font.render("X's turn" if x_turn else "O's turn", True, (3,4,94))
+    fon_rect=  fon_op.get_rect()
+    fon_rect.topleft=(200, 610)
+    window.blit(fon_op, fon_rect)
     pygame.display.update()
 
 def show_winner(winner):
@@ -107,12 +113,14 @@ def show_winner(winner):
     pygame.display.update()
 
 def main_loop():
+    data_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    pos=()
     global data
+    global x_turn
     data={}
     checker = win_checker(data)
     x_turn = True
     mode = 1
-    global pos
     clock = pygame.time.Clock()
     while True:
         data_filler(data, window)
@@ -136,7 +144,22 @@ def main_loop():
                             if rect not in data:
                                 data[rect] = "X" if x_turn else "O"
                                 x_turn = not x_turn
-                    
+
+                if mode==3:
+                    box_data = game_manager()
+                    for rect in range(len(box_data)):
+                        rect_op = box_data[rect]
+                        if rect_op.collidepoint(pos):
+                            if rect not in data:
+                                try:
+                                    data[rect] = "X"
+                                    ind = randint(0, 8-len(data.keys()))
+                                    data_ind.remove(rect)
+                                    ind_final = data_ind[ind]
+                                    data[ind_final] = "O"
+                                except Exception as e:
+                                    pass
+
             #Handle Winners
             if winner=="O" or winner=="X":
                 mode=2
