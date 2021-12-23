@@ -1,19 +1,8 @@
 import pygame
-
+import random
 green = (0, 255, 0)
 blue = (0, 0, 128)
-# class line():
-#     def __init__(self, x, y, length, width, color):
-#         self.x = x
-#         self.y = y
-#         self.length = length
-#         self.width = width
-#         self.color = color
 
-#     def draw(self, window, border=None):
-#         if border:
-#             pygame.draw.rect(window, border,(self.x-2, self.y-2, self.width+4, self.length+4), 0)
-#         pygame.draw.rect(window, self.color,(self.x, self.y, self.width, self.length), 0)
 
 class circle():
     def __init__(self, x, y, height, line_width, color:tuple):
@@ -65,9 +54,20 @@ class menu_item():
     def draw(self, window, text):
         if self.border:
             pygame.draw.rect(window, self.color, (self.x-2, self.y-2, self.width+4, self.height+4))
-        rect_op = pygame.draw.ellipse(window, self.color, (self.x, self.y, self.width, self.height))
+        rect_op = pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
         text = self.font.render(text, True, self.font_color, self.color)
         text_rect = text.get_rect()
         text_rect.center = (self.x+(self.width//2), self.y+(self.height//2))
         window.blit(text, text_rect)
         return rect_op
+
+def get_ind(data, key):
+    ls=[]
+    for x in data.keys():
+        if data[x]==key:
+            ls.append(x)
+    return ls
+
+
+
+    

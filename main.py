@@ -14,6 +14,7 @@ data={}
 POSS_POS = [(50, 50), (250, 50), (450, 50), (50, 250), (250, 250), (450, 250), (50, 450), (250, 450), (450, 450)]
 WINS = [[0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 4, 8], [2, 4, 6]]
 ICON = './assests/doge.jpg'
+MENU_IMG = './assests/menu_img.png'
 programIcon = pygame.image.load(ICON)
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_icon(programIcon)
@@ -113,20 +114,25 @@ def show_winner(winner):
     window.blit(fon_op, font_rect)
     pygame.display.update()
 
-def main_loop():
-    data_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+def ai_data(data_noob):
+    board_new = data_noob
+    empty_spaces=[]
+    for x in range(9):
+        if x not in board_new.keys():
+            empty_spaces.append(x)
+
+def main_loop(mode=1):
     pos=()
     global data
     global x_turn
     data={}
     checker = win_checker(data)
     x_turn = True
-    mode = 1
     clock = pygame.time.Clock()
     while True:
         data_filler(data, window, mode)
         winner = checker.run_checker()
-        if mode==1:
+        if mode==1 or mode==3 or mode!=2:
             fill_window()
         elif mode==2:
             show_winner(winner)
@@ -152,14 +158,12 @@ def main_loop():
                         rect_op = box_data[rect]
                         if rect_op.collidepoint(pos):
                             if rect not in data:
-                                try:
-                                    data[rect] = "X"
-                                    ind = randint(0, 8-len(data.keys()))
-                                    data_ind.remove(rect)
-                                    ind_final = data_ind[ind]
-                                    data[ind_final] = "O"
-                                except Exception as e:
-                                    pass
+                                data[rect] = "X"
+                                ai_data(data)
+                                #data[ai_data(data)] = "O"
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    menu_op()
 
             #Handle Winners
             if winner=="O" or winner=="X":
@@ -167,5 +171,47 @@ def main_loop():
             elif len(data)==9:
                 mode=2
 
+def show_help():
+    label=[]
+    text=["1) Tic-tac-toe is played on a three-by-three grid", "by two players, who alternately place the marks X and O ", "in one of the nine spaces in the grid."]
+    label_op=[]
+    text_control = ["2) Press ESCAPE to go back to main menu", "press MULTIPLAYER to play multiplayer locally"]
+    window.fill((70,143,243))
+    font = pygame.font.Font("./assests/fonts/Roboto-Bold.ttf", 20)
+    for elem in range(len(text)):
+        text_op = str(text[elem])
+        label.append(font.render(text_op, True, (0, 0, 0)))
+    
+    for x in range(len(label)):
+        window.blit(label[x], (50, 100+(x*25), 400, 25))
+
+    for elem in range(len(text_control)):
+        text_op = str(text_control[elem])
+        label_op.append(font.render(text_op, True, (0, 0, 0)))
+    
+    for x in range(len(label_op)):
+        window.blit(label_op[x], (50, 200+(x*25), 400, 25))
+
+def menu_op():
+    window.fill((70,143,234))
+    img= pygame.image.load(MENU_IMG)
+    img = pygame.transform.scale(img, (400, 400))
+    window.blit(img, (100, 0))
+    multi_player = menu_item(100, 500, 400, 50, None, (40,113,204), "bold", 20, (0, 0, 0))
+    box_mp = multi_player.draw(window, "MULTIPLAYER")
+    help = menu_item(100, 400, 400, 50, None, (40,113,204), "bold", 20, (0, 0, 0))
+    help_mp = help.draw(window, "HELP")
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONUP:
+                pos_op = event.pos
+                if box_mp.collidepoint(pos_op):
+                    main_loop(1)
+                if help_mp.collidepoint(pos_op):
+                    show_help()
+        pygame.display.update()
+
 if __name__ == "__main__":
-    main_loop()
+    menu_op()
