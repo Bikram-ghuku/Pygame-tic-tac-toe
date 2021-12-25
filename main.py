@@ -1,5 +1,5 @@
 import pygame, sys
-from random import  randint
+import os, subprocess
 from sprites import *
 pygame.init()
 background = (50,65,194)
@@ -176,13 +176,14 @@ def show_help():
     
     for x in range(len(label_op)):
         window.blit(label_op[x], (50, 200+(x*25), 400, 25))
-        
+     
     while True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     menu_op()
         pygame.display.update()
+
 def menu_op():
     window.fill((70,143,234))
     img= pygame.image.load(MENU_IMG)
@@ -192,6 +193,8 @@ def menu_op():
     box_mp = multi_player.draw(window, "START")
     help = menu_item(100, 400, 400, 50, None, (40,113,204), "bold", 20, (0, 0, 0))
     help_mp = help.draw(window, "HELP")
+    license = menu_item(100, 600, 400, 50, None, (40,113,204), "bold", 20, (0, 0, 0))
+    license_box = license.draw(window, "LICENSE")
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -202,7 +205,8 @@ def menu_op():
                     main_loop(1)
                 if help_mp.collidepoint(pos_op):
                     show_help()
+                if license_box.collidepoint(pos_op):
+                    subprocess.call(('notepad.exe', "LICENSE"))
         pygame.display.update()
-
 if __name__ == "__main__":
     menu_op()
