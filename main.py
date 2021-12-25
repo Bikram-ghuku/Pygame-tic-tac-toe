@@ -53,7 +53,7 @@ class win_checker():
         if len(self.list)>=9:
             winner="tie"
             
-        return winner
+        return [winner, type_win]
 
 def draw_board(color:tuple, WIDTH_LINE):
     pygame.draw.line(window, color, (0, 200), (600, 200), WIDTH_LINE)
@@ -102,24 +102,18 @@ def data_filler(data, windowd, mod_op):
         window.blit(fon_op, fon_rect)
     pygame.display.update()
 
-def show_winner(winner):
+def show_winner(winner, x=0):
+    pygame.time.wait(1000)
     window.fill((53,130,194))
     font = pygame.font.SysFont(pygame.font.get_fonts()[1], 64)
-    if winner!="tie":
-        fon_op = font.render(f"{winner} won!!", True, (4,57,105))
+    if winner[0]!="tie":
+        fon_op = font.render(f"{winner[0]} won!!", True, (4,57,105))
     else:
         fon_op = font.render("Match Tie!!", True, (4,57,105))
     font_rect = fon_op.get_rect()
     font_rect.topleft = (150, 250)
     window.blit(fon_op, font_rect)
     pygame.display.update()
-
-def ai_data(data_noob):
-    board_new = data_noob
-    empty_spaces=[]
-    for x in range(9):
-        if x not in board_new.keys():
-            empty_spaces.append(x)
 
 def main_loop(mode=1):
     pos=()
@@ -152,21 +146,12 @@ def main_loop(mode=1):
                                 data[rect] = "X" if x_turn else "O"
                                 x_turn = not x_turn
 
-                if mode==3:
-                    box_data = game_manager()
-                    for rect in range(len(box_data)):
-                        rect_op = box_data[rect]
-                        if rect_op.collidepoint(pos):
-                            if rect not in data:
-                                data[rect] = "X"
-                                ai_data(data)
-                                #data[ai_data(data)] = "O"
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     menu_op()
 
             #Handle Winners
-            if winner=="O" or winner=="X":
+            if winner[0]=="O" or winner[0]=="X":
                 mode=2
             elif len(data)==9:
                 mode=2
@@ -191,14 +176,20 @@ def show_help():
     
     for x in range(len(label_op)):
         window.blit(label_op[x], (50, 200+(x*25), 400, 25))
-
+        
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    menu_op()
+        pygame.display.update()
 def menu_op():
     window.fill((70,143,234))
     img= pygame.image.load(MENU_IMG)
     img = pygame.transform.scale(img, (400, 400))
     window.blit(img, (100, 0))
     multi_player = menu_item(100, 500, 400, 50, None, (40,113,204), "bold", 20, (0, 0, 0))
-    box_mp = multi_player.draw(window, "MULTIPLAYER")
+    box_mp = multi_player.draw(window, "START")
     help = menu_item(100, 400, 400, 50, None, (40,113,204), "bold", 20, (0, 0, 0))
     help_mp = help.draw(window, "HELP")
     while True:
