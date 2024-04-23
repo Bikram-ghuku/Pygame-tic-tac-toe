@@ -4,6 +4,9 @@
 ![Github release](https://img.shields.io/github/v/release/Bikram-ghuku/Pygame-tic-tac-toe)
 ![Github License](https://img.shields.io/github/license/Bikram-ghuku/Pygame-tic-tac-toe)
 
+![menu_img_1](https://github.com/Bikram-ghuku/Pygame-tic-tac-toe/assets/37508038/e88f1da4-14e9-459b-9402-a1922108fd29)
+
+
 ### Developed using pygame in python everything is made from ground up
 
 ### To use it in your pc use the following commands
